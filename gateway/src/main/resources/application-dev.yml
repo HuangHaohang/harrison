@@ -1,0 +1,33 @@
+spring:
+  cloud:
+    nacos:
+      discovery:
+        server-addr: 192.168.202.140:8848
+    gateway:
+      server:
+        webflux:
+          discovery:
+            locator:
+              enabled: true
+              lower-case-service-id: true
+          routes:
+            - id: demo_route
+              uri: lb://demo-service
+              predicates:
+                - Path=/demo/**
+            - id: sso_route
+              uri: lb://sso-service
+              predicates:
+                - Path=/api/auth/**,/api/sys/**
+              filters:
+                - StripPrefix=1
+  data:
+    redis:
+      host: 192.168.202.140
+      port: 6379
+      database: 0
+  datasource:
+    url: jdbc:mysql://192.168.202.140:3306/harrison_gateway?useUnicode=true&characterEncoding=utf-8&useSSL=false&serverTimezone=Asia/Shanghai
+    username: root
+    password: password
+    driver-class-name: com.mysql.cj.jdbc.Driver
