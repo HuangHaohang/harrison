@@ -1,8 +1,9 @@
 <template>
   <div class="pro-table">
     <!-- 搜索区域 -->
-    <div class="search-region" v-if="$slots.search">
-      <slot name="search" :search="search" :reset="reset"></slot>
+    <div class="search-region" v-if="searchColumns.length">
+      <SearchForm :columns="searchColumns" :search-param="searchParam" :search-tool-button="searchToolButton"
+        :search="search" :reset="reset" />
     </div>
 
     <!-- 工具栏区域 -->
@@ -19,39 +20,54 @@
 
     <!-- 表格区域 -->
     <div class="table-region">
-      <el-table
-        v-loading="loading"
-        :data="tableData"
-        border
-        style="width: 100%"
-        v-bind="$attrs"
-      >
-        <slot></slot>
+      <el-table v-loading="loading" :data="tableData" border style="width: 100%" v-bind="$attrs">
+        <template v-for="item in tableColumns" :key="item.prop">
+          <!-- Selection Column -->
+          <el-table-column v-if="item.type === 'selection'" type="selection" :width="item.width || 55"
+            :align="item.align || 'center'" :fixed="item.fixed" />
+
+          <!-- Index Column -->
+          <el-table-column v-else-if="item.type === 'index'" type="index" :label="item.label || '#'"
+            :width="item.width || 80" :align="item.align || 'center'" :fixed="item.fixed" />
+
+          <!-- Custom Render / Slot Column -->
+          <el-table-column v-else :prop="item.prop" :label="item.label" :width="item.width" :min-width="item.minWidth"
+            :sortable="item.sortable" :show-overflow-tooltip="item.showOverflowTooltip" :fixed="item.fixed"
+            :align="item.align">
+            <template #default="scope">
+              <!-- If slot is provided in column config -->
+              <slot v-if="item.slot" :name="item.slot" :row="scope.row"></slot>
+
+              <!-- If render function is provided (less common in Vue 3 templates but possible) -->
+              <!-- Default rendering -->
+              <span v-else>{{ scope.row[item.prop] }}</span>
+            </template>
+          </el-table-column>
+        </template>
       </el-table>
     </div>
 
     <!-- 分页区域 -->
     <div class="pagination-region" v-if="pagination">
-      <el-pagination
-        v-model:current-page="pageable.pageNum"
-        v-model:page-size="pageable.pageSize"
-        :page-sizes="[10, 20, 50, 100]"
-        :background="true"
-        layout="total, sizes, prev, pager, next, jumper"
-        :total="pageable.total"
-        @size-change="handleSizeChange"
-        @current-change="handleCurrentChange"
-      />
+      <el-pagination v-model:current-page="pageable.pageNum" v-model:page-size="pageable.pageSize"
+        :page-sizes="[10, 20, 50, 100]" :background="true" layout="total, sizes, prev, pager, next, jumper"
+        :total="pageable.total" @size-change="handleSizeChange" @current-change="handleCurrentChange" />
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, onMounted } from "vue";
+import { ref, reactive, onMounted, computed, type PropType } from "vue";
 import { Refresh } from "@element-plus/icons-vue";
+import SearchForm from "./SearchForm.vue";
 
 // Props定义
 const props = defineProps({
+  // 列配置
+  columns: {
+    type: Array as PropType<any[]>,
+    default: () => []
+  },
   // 请求接口方法，返回Promise
   requestApi: {
     type: Function,
@@ -74,8 +90,13 @@ const props = defineProps({
   },
   // 分页参数映射 { pageNum: 'page', pageSize: 'size' }
   pageParamKeys: {
-    type: Object,
+    type: Object as PropType<{ pageNum: string; pageSize: string }>,
     default: () => ({ pageNum: 'page', pageSize: 'size' })
+  },
+  // 搜索栏按钮配置
+  searchToolButton: {
+    type: Array as PropType<any[]>,
+    default: () => []
   }
 });
 
@@ -89,15 +110,24 @@ const pageable = reactive({
 });
 
 // 查询参数
-const searchParam = reactive({});
+const searchParam = reactive<Record<string, any>>({});
+
+// 计算属性：分离搜索列和表格列
+const searchColumns = computed(() => {
+  return props.columns.filter(item => item.search);
+});
+
+const tableColumns = computed(() => {
+  return props.columns.filter(item => item.isShow !== false);
+});
 
 // 获取表格数据
 const getTableList = async () => {
   loading.value = true;
   try {
     // 构建请求参数
-    let params = { ...props.initParam, ...searchParam };
-    
+    let params: Record<string, any> = { ...props.initParam, ...searchParam };
+
     // 添加分页参数
     if (props.pagination) {
       params[props.pageParamKeys.pageNum] = pageable.pageNum;
@@ -105,7 +135,7 @@ const getTableList = async () => {
     }
 
     const res = await props.requestApi(params);
-    
+
     // 处理返回数据
     // 兼容 records/list 和 total 字段
     if (res.code === 200) {
@@ -114,7 +144,7 @@ const getTableList = async () => {
       let list = data;
       if (data.records) list = data.records;
       else if (data.list) list = data.list;
-      
+
       // 自动识别总数字段
       const total = data.total || 0;
 
@@ -137,7 +167,11 @@ const search = () => {
 // 重置
 const reset = () => {
   pageable.pageNum = 1;
-  // 这里需要配合父组件清空搜索表单，通常父组件会监听 reset 事件或者在 slot 中处理
+  // 清空搜索参数
+  Object.keys(searchParam).forEach(key => {
+    delete searchParam[key];
+  });
+  // 重新获取数据
   getTableList();
 };
 
@@ -177,10 +211,11 @@ onMounted(() => {
   height: 100%;
   display: flex;
   flex-direction: column;
+  text-align: left;
 }
 
 .search-region {
- 
+  margin: 16px 16px 0 16px;
 }
 
 .toolbar-region {
@@ -199,10 +234,5 @@ onMounted(() => {
   padding: 15px 18px;
   display: flex;
   justify-content: flex-end;
-}
-
-/* 覆盖 el-form-item 的 margin-bottom，使搜索栏更紧凑 */
-:deep(.search-region .el-form-item) {
-  margin-bottom: 18px;
 }
 </style>

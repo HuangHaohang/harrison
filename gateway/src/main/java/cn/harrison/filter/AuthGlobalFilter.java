@@ -28,7 +28,8 @@ public class AuthGlobalFilter implements GlobalFilter, Ordered {
     // Whitelist
     private static final List<String> WHITELIST = Arrays.asList(
             "/api/auth/login",
-            "/api/auth/register"
+            "/api/auth/register",
+            "/api/ai/chat/stream"
     );
 
     @Override

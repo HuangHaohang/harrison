@@ -73,7 +73,7 @@ CREATE TABLE `sys_role_permission` (
 
 ALTER TABLE `sys_user` ADD COLUMN `password` varchar(100) DEFAULT NULL COMMENT 'Password (Encrypted)';
 ALTER TABLE `sys_user` ADD COLUMN `salt` varchar(50) DEFAULT NULL COMMENT 'Salt (Optional if using BCrypt)';
-ALTER TABLE `sys_user` ADD COLUMN `avatar` varchar(255) DEFAULT NULL COMMENT 'Avatar URL';
+ALTER TABLE `sys_user` MODIFY COLUMN `avatar` longtext DEFAULT NULL COMMENT 'Avatar (Base64)';
 ALTER TABLE `sys_user` ADD COLUMN `status` tinyint(1) DEFAULT 1 COMMENT 'Status (1: Enabled, 0: Disabled)';
 ALTER TABLE `sys_user` ADD COLUMN `deleted` tinyint(1) DEFAULT 0 COMMENT 'Logical Delete (0: Normal, 1: Deleted)';
 ALTER TABLE `sys_user` ADD COLUMN `create_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT 'Create Time';

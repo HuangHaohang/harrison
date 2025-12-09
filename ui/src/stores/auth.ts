@@ -43,7 +43,12 @@ export const useAuthStore = defineStore('auth', () => {
       console.log('res', res);
             
       if (res.code === 200) {
-        user.value = res.data.user
+        // 后端现在返回的是扁平结构 { username: "...", avatar: "...", menus: [], permissions: [] }
+        // 并不是嵌套在 user 对象里
+        user.value = {
+          username: res.data.username,
+          avatar: res.data.avatar
+        }
         permissions.value = res.data.permissions || []
         menus.value = res.data.menus || []
         

@@ -61,4 +61,13 @@ public class UserController {
         userService.resetPassword(id);
         return Result.success();
     }
+
+    // 分配角色
+    @PostMapping("/assign-role")
+    public Result<?> assignUserRole(@RequestBody Map<String, Long> params) {
+        Long userId = params.get("userId");
+        Long roleId = params.get("roleId");
+        userService.assignUserRole(userId, roleId);
+        return Result.success();
+    }
 }

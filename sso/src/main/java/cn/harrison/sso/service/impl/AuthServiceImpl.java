@@ -65,7 +65,8 @@ public class AuthServiceImpl implements AuthService {
         List<Permission> menuTree = buildMenuTree(permissions);
         
         Map<String, Object> data = new HashMap<>();
-        data.put("user", user);
+        data.put("username", user.getUsername());
+        data.put("avatar", user.getAvatar());
         data.put("menus", menuTree);
         data.put("permissions", permissions.stream().map(Permission::getCode).collect(Collectors.toList()));
         

@@ -1,6 +1,6 @@
 <template>
     <div class="logo-section" :class="{ 'is-collapse': isCollapse }">
-        <img src="@/assets/vue.svg" alt="Logo" class="logo" />
+        <img src="@/assets/logo.svg" alt="Logo" class="logo" />
         <span class="system-name" v-show="!isCollapse">{{ $t('system.name') }}</span>
     </div>
     <el-scrollbar max-height="calc(100vh - 60px)">

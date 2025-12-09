@@ -33,4 +33,10 @@ public class User implements Serializable {
 
     @TableField(exist = false)
     private List<Long> roleIds;
+
+    @TableField(exist = false)
+    private Long roleId;
+
+    @TableField(exist = false)
+    private String roleName;
 }

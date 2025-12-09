@@ -1,13 +1,14 @@
 <template>
   <div class="header-container">
     <el-row align="middle" justify="space-between" class="header-row">
-      <el-col :span="10">
+      <el-col :span="6">
         <div class="header-left">
           <el-icon class="trigger-icon" @click="toggleSidebar">
             <component :is="isCollapse ? Expand : Fold" />
           </el-icon>
           <el-breadcrumb separator="/">
-            <el-breadcrumb-item v-for="(item, index) in breadcrumbs" :key="index" class="breadcrumb-item" :class="{ 'breadcrumb-home': index === 0 }">
+            <el-breadcrumb-item v-for="(item, index) in breadcrumbs" :key="index" class="breadcrumb-item"
+              :class="{ 'breadcrumb-home': index === 0 }">
               <span v-if="index === 0" @click="router.push('/')" style="cursor: pointer;">{{ getMenuName(item) }}</span>
               <span v-else>{{ getMenuName(item) }}</span>
             </el-breadcrumb-item>
@@ -30,12 +31,10 @@
       </el-col>
 
       <!-- 右侧：功能图标 -->
-      <el-col :span="8">
+      <el-col :span="10">
         <div class="action-section">
           <!-- 亮色/暗色切换 -->
-          <el-tooltip :content="$t('header.themeSwitch')" placement="bottom">
-            <el-switch v-model="isDark" :active-icon="Moon" :inactive-icon="Sunny" @change="toggleDark" />
-          </el-tooltip>
+          <el-switch v-model="isDark" :active-icon="Moon" :inactive-icon="Sunny" @change="toggleDark" />
 
           <!-- 语言国际化 -->
           <el-dropdown @command="handleLangChange">
@@ -62,11 +61,12 @@
           </el-tooltip>
 
           <!-- GitHub图标 -->
-          <el-tooltip :content="$t('header.githubRepo')" placement="bottom">
-            <el-icon :size="20" style="cursor: pointer;">
-              <Link />
-            </el-icon>
-          </el-tooltip>
+          <img 
+            src="@/assets/github.svg" 
+            style="width: 20px; height: 20px; cursor: pointer;"
+            alt="GitHub Repo" 
+            @click="openGitHubRepo" 
+          />
 
           <!-- 个人头像 -->
           <el-tooltip :content="$t('header.userCenter')" placement="bottom">
@@ -80,20 +80,11 @@
   <!-- 标签页栏 -->
   <div class="tags-view-container">
     <el-scrollbar class="tags-view-wrapper">
-      <router-link
-        v-for="tag in visitedViews"
-        :key="tag.path"
-        :to="{ path: tag.path, query: tag.query }"
-        class="tags-view-item"
-        :class="{ active: isActive(tag) }"
-      >
+      <router-link v-for="tag in visitedViews" :key="tag.path" :to="{ path: tag.path, query: tag.query }"
+        class="tags-view-item" :class="{ active: isActive(tag) }">
         <span v-if="isActive(tag)" class="active-dot"></span>
         {{ getTagName(tag) }}
-        <el-icon
-          v-if="!isAffix(tag)"
-          class="close-icon"
-          @click.prevent.stop="closeSelectedTag(tag)"
-        >
+        <el-icon v-if="!isAffix(tag)" class="close-icon" @click.prevent.stop="closeSelectedTag(tag)">
           <Close />
         </el-icon>
       </router-link>
@@ -133,7 +124,7 @@ const getTagName = (tag: any) => {
   if (tag.path === '/' || tag.path === '/home' || tag.path === '/dashboard') {
     return t('home.title')
   }
-  
+
   if (tag.name === 'Dashboard') {
     return t('home.title')
   }
@@ -143,7 +134,7 @@ const getTagName = (tag: any) => {
   if (menu) {
     return getMenuName(menu)
   }
-  
+
   // 降级使用 meta.title 或默认名称
   return tag.meta?.title || tag.title || 'no-name'
 }
@@ -254,24 +245,26 @@ const findMenuPath = (menus: any[], targetPath: string): any[] => {
 }
 
 watch(
-   [() => route.path, () => authStore.menus],
-   ([newPath, menus]) => {
-     if (newPath === '/' || newPath === '/home') {
-       breadcrumbs.value = []
-       return
-     }
-     // 递归查找菜单路径
+  [() => route.path, () => authStore.menus],
+  ([newPath, menus]) => {
+    if (newPath === '/' || newPath === '/home') {
+      breadcrumbs.value = []
+      return
+    }
+    // 递归查找菜单路径
     const menuPath = findMenuPath(menus, newPath)
     if (newPath === '/dashboard') {
-        breadcrumbs.value = [{ path: '/dashboard', meta: { title: t('home.title') }, name: 'Dashboard' }]
+      breadcrumbs.value = [{ path: '/dashboard', meta: { title: t('home.title') }, name: 'Dashboard' }]
     } else {
-        breadcrumbs.value = [{ path: '/dashboard', meta: { title: t('home.title') }, name: 'Dashboard' }, ...menuPath]
+      breadcrumbs.value = [{ path: '/dashboard', meta: { title: t('home.title') }, name: 'Dashboard' }, ...menuPath]
     }
   },
-   { immediate: true }
- )
+  { immediate: true }
+)
 
-const userAvatar = ref('https://cube.elemecdn.com/3/7c/3ea6beec64369c2642b92c6726f1epng.png')
+const userAvatar = computed(() => {
+  return authStore.user?.avatar || 'https://cube.elemecdn.com/3/7c/3ea6beec64369c2642b92c6726f1epng.png'
+})
 import { useDark, useToggle } from '@vueuse/core'
 const isDark = useDark({
   selector: 'html', // 关键：作用于html元素
@@ -280,6 +273,10 @@ const isDark = useDark({
   valueLight: 'light',
   storageKey: 'el-theme'
 })
+const openGitHubRepo = () => {
+  window.open('https://github.com/HuangHaohang/harrison', '_blank')
+}
+
 const toggleDark = () => {
   useToggle(isDark)
 }
@@ -301,7 +298,7 @@ const toggleDark = () => {
   cursor: pointer;
   margin: 0 16px;
   color: var(--el-text-color-primary);
-  
+
   &:hover {
     color: var(--el-color-primary);
   }
@@ -329,7 +326,8 @@ const toggleDark = () => {
   display: flex;
   align-items: center;
   justify-content: flex-end;
-  gap: 16px;
+  margin-right: 32px;
+  gap: 24px;
 }
 
 /* 面包屑样式 */
@@ -344,7 +342,8 @@ const toggleDark = () => {
 }
 
 .breadcrumb-item :deep(.el-breadcrumb__inner) {
-  color: #909399 !important; /* 浅灰色 */
+  color: #909399 !important;
+  /* 浅灰色 */
   font-weight: normal;
 }
 
@@ -356,8 +355,9 @@ const toggleDark = () => {
 }
 
 .tags-view-wrapper {
-  text-align: left; /* 确保内容左对齐 */
-  
+  text-align: left;
+  /* 确保内容左对齐 */
+
   .tags-view-item {
     display: inline-block;
     position: relative;

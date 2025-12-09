@@ -26,8 +26,8 @@ export default defineConfig({
     proxy: {
       '/api': {
         target: 'http://localhost:8080', // Gateway address
-        changeOrigin: true,
-        rewrite: (path) => path.replace(/^\/api/, '')
+        changeOrigin: true
+        // rewrite: (path) => path.replace(/^\/api/, '') // Don't strip /api, let Gateway handle it
       }
     }
   }
