@@ -1,81 +1,111 @@
 <template>
-  
-    <ProTable
-      ref="proTable"
-      :request-api="getTableList"
-      :init-param="initParam"
-    >
-      <!-- 1. 搜索区域 -->
-      <template #search="{ search, reset }">
-        <el-form :inline="true" :model="searchForm" class="search-form">
-          <el-form-item :label="$t('test.name')">
-            <el-input v-model="searchForm.username" :placeholder="$t('test.namePlaceholder')" clearable />
-          </el-form-item>
-          <el-form-item :label="$t('user.status')">
-            <el-select v-model="searchForm.status" :placeholder="$t('user.status')" clearable style="width: 180px">
-              <el-option :label="$t('user.enable')" :value="1" />
-              <el-option :label="$t('user.disable')" :value="0" />
-            </el-select>
-          </el-form-item>
-          <el-form-item>
-            <el-button type="primary" :icon="Search" @click="search">{{ $t('common.search') }}</el-button>
-            <el-button :icon="Refresh" @click="reset">{{ $t('common.reset') }}</el-button>
-          </el-form-item>
-        </el-form>
-      </template>
+  <ProTable
+    ref="proTable"
+    :request-api="getTableList"
+    :init-param="initParam"
+    :columns="columns"
+  >
+    <!-- 工具栏区域 -->
+    <template #toolbar>
+      <el-button type="primary" :icon="Plus" plain>{{ $t('user.addUser') }}</el-button>
+      <el-button type="danger" :icon="Delete" plain>{{ $t('common.batchDelete') }}</el-button>
+      <el-button type="warning" :icon="Download" plain>{{ $t('common.export') }}</el-button>
+    </template>
 
-      <!-- 2. 工具栏区域 -->
-      <template #toolbar>
-        <el-button type="primary" :icon="Plus" plain>{{ $t('user.addUser') }}</el-button>
-        <el-button type="danger" :icon="Delete" plain>{{ $t('common.batchDelete') }}</el-button>
-        <el-button type="warning" :icon="Download" plain>{{ $t('common.export') }}</el-button>
-      </template>
+    <!-- Custom column slot example -->
+    <template #gender="{ row }">
+      {{ row.gender === 1 ? $t('test.male') : $t('test.female') }}
+    </template>
 
-      <!-- 3. 表格列 -->
-      <el-table-column type="selection" width="55" align="center" />
-      <el-table-column type="index" label="#" width="80" align="center" />
-      <el-table-column prop="username" :label="$t('test.name')" min-width="120" />
-      <el-table-column prop="age" :label="$t('test.age')" width="100" sortable />
-      <el-table-column prop="gender" :label="$t('test.gender')" width="100">
-        <template #default="scope">
-          {{ scope.row.gender === 1 ? $t('test.male') : $t('test.female') }}
-        </template>
-      </el-table-column>
-      <el-table-column prop="mobile" :label="$t('user.mobile')" min-width="150" />
-      <el-table-column prop="email" :label="$t('user.email')" min-width="200" show-overflow-tooltip />
-      <el-table-column prop="status" :label="$t('user.status')" width="100" align="center">
-        <template #default="scope">
-          <el-tag :type="scope.row.status === 1 ? 'success' : 'danger'">
-            {{ scope.row.status === 1 ? $t('user.enable') : $t('user.disable') }}
-          </el-tag>
-        </template>
-      </el-table-column>
-      <el-table-column prop="createTime" :label="$t('user.createTime')" min-width="180" sortable />
-      <el-table-column :label="$t('common.operation')" width="200" fixed="right" align="center">
-        <template #default>
-          <el-button link type="primary" :icon="Edit">{{ $t('common.edit') }}</el-button>
-          <el-button link type="danger" :icon="Delete">{{ $t('common.delete') }}</el-button>
-        </template>
-      </el-table-column>
-    </ProTable>
+    <template #status="{ row }">
+      <el-tag :type="row.status === 1 ? 'success' : 'danger'">
+        {{ row.status === 1 ? $t('user.enable') : $t('user.disable') }}
+      </el-tag>
+    </template>
 
+    <template #operation>
+      <el-button link type="primary" :icon="Edit">{{ $t('common.edit') }}</el-button>
+      <el-button link type="danger" :icon="Delete">{{ $t('common.delete') }}</el-button>
+    </template>
+  </ProTable>
 </template>
 
 <script setup lang="ts">
-import { reactive, ref } from 'vue'
-import { Search, Refresh, Plus, Delete, Download, Edit } from '@element-plus/icons-vue'
-import ProTable from '@/components/ProTable.vue'
+import { reactive } from 'vue'
+import { Plus, Delete, Download, Edit } from '@element-plus/icons-vue'
+import ProTable from '@/components/ProTable/index.vue'
+import { useI18n } from 'vue-i18n'
 
-// 搜索表单数据
-const searchForm = reactive({
-  username: '',
-  status: undefined
-})
+const { t } = useI18n()
 
 // 初始参数
 const initParam = reactive({
   type: 1
 })
+
+// 表格配置
+const columns = [
+  { type: 'selection', fixed: 'left', width: 55 },
+  { type: 'index', label: '#', width: 80 },
+  {
+    prop: 'username',
+    label: t('test.name'),
+    minWidth: 120,
+    search: { el: 'input', props: { placeholder: t('test.namePlaceholder') } }
+  },
+  {
+    prop: 'status',
+    label: t('user.status'),
+    width: 100,
+    align: 'center',
+    slot: 'status',
+    search: {
+      el: 'select',
+      props: { placeholder: t('user.status') },
+    },
+    enum: [
+      { label: t('user.enable'), value: 1 },
+      { label: t('user.disable'), value: 0 }
+    ]
+  },
+  {
+    prop: 'age',
+    label: t('test.age'),
+    width: 100,
+    sortable: true
+  },
+  {
+    prop: 'gender',
+    label: t('test.gender'),
+    width: 100,
+    slot: 'gender'
+  },
+  {
+    prop: 'mobile',
+    label: t('user.mobile'),
+    minWidth: 150
+  },
+  {
+    prop: 'email',
+    label: t('user.email'),
+    minWidth: 200,
+    showOverflowTooltip: true
+  },
+  {
+    prop: 'createTime',
+    label: t('user.createTime'),
+    minWidth: 180,
+    sortable: true
+  },
+  {
+    prop: 'operation',
+    label: t('common.operation'),
+    width: 200,
+    fixed: 'right',
+    align: 'center',
+    slot: 'operation'
+  }
+]
 
 // 模拟后端 API 请求
 const getTableList = (params: any) => {
@@ -124,6 +154,6 @@ const getTableList = (params: any) => {
 .test-table-container {
   height: 100%;
   padding: 20px;
-  background-color: #f0f2f5; /* 模拟灰色背景，以突显 ProTable 的白色背景 */
+  background-color: #f0f2f5;
 }
 </style>

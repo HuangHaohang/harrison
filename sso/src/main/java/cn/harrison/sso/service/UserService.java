@@ -11,4 +11,5 @@ public interface UserService extends IService<User> {
     void deleteUser(Long userId);
     void updateUserStatus(Long userId, Integer status);
     void resetPassword(Long userId);
+    void assignUserRole(Long userId, Long roleId);
 }

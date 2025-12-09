@@ -1,72 +1,19 @@
 <template>
-  <div class="app-container">
-    <el-row :gutter="20">
-      <el-col :span="24">
-        <!-- 搜索栏 -->
-        <el-card class="search-card">
-          <el-form :inline="true" :model="searchForm" class="search-form">
-            <el-form-item :label="$t('role.roleName')">
-              <el-input v-model="searchForm.roleName" :placeholder="$t('role.roleNamePlaceholder')" clearable @keyup.enter="handleSearch" />
-            </el-form-item>
-            <el-form-item :label="$t('role.roleCode')">
-              <el-input v-model="searchForm.roleCode" :placeholder="$t('role.roleCodePlaceholder')" clearable @keyup.enter="handleSearch" />
-            </el-form-item>
-            <el-form-item>
-              <el-button type="primary" @click="handleSearch">
-                <el-icon><Search /></el-icon>{{ $t('common.search') }}
-              </el-button>
-              <el-button @click="handleReset">
-                <el-icon><Refresh /></el-icon>{{ $t('common.reset') }}
-              </el-button>
-            </el-form-item>
-          </el-form>
-        </el-card>
-      </el-col>
-      
-      <el-col :span="24" class="mt-20">
-        <!-- 表格栏 -->
-        <el-card class="table-card">
-          <div class="table-toolbar">
-            <el-button type="primary" @click="handleAdd">
-              <el-icon><Plus /></el-icon>{{ $t('role.addRole') }}
-            </el-button>
-          </div>
-
-          <el-table v-loading="loading" :data="tableData" border style="width: 100%">
-            <el-table-column prop="roleName" :label="$t('role.roleName')" min-width="150" show-overflow-tooltip />
-            <el-table-column prop="roleCode" :label="$t('role.roleCode')" min-width="150" show-overflow-tooltip />
-            <el-table-column prop="description" :label="$t('role.description')" min-width="200" show-overflow-tooltip />
-            <el-table-column prop="createTime" :label="$t('user.createTime')" width="180" align="center" />
-            <el-table-column :label="$t('common.operation')" width="250" fixed="right" align="center">
-              <template #default="scope">
-                <el-button link type="primary" @click="handleEdit(scope.row)">
-                  <el-icon><Edit /></el-icon>{{ $t('common.edit') }}
-                </el-button>
-                <el-button link type="primary" @click="handleAssignPermission(scope.row)">
-                  <el-icon><Setting /></el-icon>{{ $t('role.assignPermission') }}
-                </el-button>
-                <el-button link type="danger" @click="handleDelete(scope.row)">
-                  <el-icon><Delete /></el-icon>{{ $t('common.delete') }}
-                </el-button>
-              </template>
-            </el-table-column>
-          </el-table>
-
-          <!-- 分页 -->
-          <div class="pagination-container">
-            <el-pagination
-              v-model:current-page="pagination.currentPage"
-              v-model:page-size="pagination.pageSize"
-              :page-sizes="[10, 20, 50, 100]"
-              layout="total, sizes, prev, pager, next, jumper"
-              :total="pagination.total"
-              @size-change="handleSizeChange"
-              @current-change="handleCurrentChange"
-            />
-          </div>
-        </el-card>
-      </el-col>
-    </el-row>
+  <div class="role-manage">
+    <ProTable
+      ref="proTable"
+      :columns="columns"
+      :request-api="getRoleList"
+      :search-tool-button="searchToolButton"
+      :page-param-keys="{ pageNum: 'page', pageSize: 'limit' }"
+    >
+      <!-- Operation Slot -->
+      <template #operation="{ row }">
+        <el-button link type="primary" :icon="Edit" @click="handleEdit(row)">{{ $t('common.edit') }}</el-button>
+        <el-button link type="primary" :icon="Setting" @click="handleAssignPermission(row)">{{ $t('role.assignPermission') }}</el-button>
+        <el-button link type="danger" :icon="Delete" @click="handleDelete(row)">{{ $t('common.delete') }}</el-button>
+      </template>
+    </ProTable>
 
     <!-- 新增/编辑对话框 -->
     <el-dialog
@@ -139,29 +86,40 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, onMounted, nextTick } from 'vue'
+import { ref, reactive, nextTick, computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { ElMessage, ElMessageBox, ElTree } from 'element-plus'
-import { Search, Refresh, Plus, Edit, Delete, Setting } from '@element-plus/icons-vue'
+import { Plus, Edit, Delete, Setting } from '@element-plus/icons-vue'
 import { getRoleList, addRole, updateRole, deleteRole, getRolePermissions, assignPermissions } from '@/api/role'
 import { getPermissionList } from '@/api/permission'
+import ProTable from '@/components/ProTable/index.vue'
+import type { ColumnProps } from '@/components/ProTable/interface'
 
 const { t, locale } = useI18n()
 
-// 搜索表单
-const searchForm = reactive({
-  roleName: '',
-  roleCode: ''
-})
+// ProTable 实例
+const proTable = ref()
 
-// 表格数据
-const loading = ref(false)
-const tableData = ref([])
-const pagination = reactive({
-  currentPage: 1,
-  pageSize: 10,
-  total: 0
-})
+// 表格列配置
+const columns: ColumnProps[] = [
+  { type: 'selection', fixed: 'left', width: 55 },
+  { type: 'index', label: '#', width: 80 },
+  { 
+    prop: 'roleName', 
+    label: t('role.roleName'), 
+    minWidth: 150, 
+    search: { el: 'input', props: { placeholder: t('role.roleNamePlaceholder') } } 
+  },
+  { 
+    prop: 'roleCode', 
+    label: t('role.roleCode'), 
+    minWidth: 150, 
+    search: { el: 'input', props: { placeholder: t('role.roleCodePlaceholder') } } 
+  },
+  { prop: 'description', label: t('role.description'), minWidth: 200, showOverflowTooltip: true },
+  { prop: 'createTime', label: t('user.createTime'), width: 180, align: 'center' },
+  { prop: 'operation', label: t('common.operation'), width: 250, fixed: 'right', align: 'center', slot: 'operation' }
+]
 
 // 对话框控制
 const dialogVisible = ref(false)
@@ -202,57 +160,15 @@ const defaultProps = {
   }
 }
 
-// 获取角色列表
-const fetchRoleList = async () => {
-  loading.value = true
-  try {
-    const params = {
-      page: pagination.currentPage,
-      limit: pagination.pageSize,
-      ...searchForm
-    }
-    const res = await getRoleList(params)
-    tableData.value = res.data.records || []
-    pagination.total = res.data.total || 0
-  } catch (error) {
-    console.error(error)
-  } finally {
-    loading.value = false
+// 重置表单
+const resetForm = () => {
+  if (roleFormRef.value) {
+    roleFormRef.value.resetFields()
   }
-}
-
-// 获取权限列表
-const fetchPermissionList = async () => {
-  try {
-    const res = await getPermissionList()    
-    permissionData.value = res.data || []
-  } catch (error) {
-    console.error(error)
-  }
-}
-
-// 搜索
-const handleSearch = () => {
-  pagination.currentPage = 1
-  fetchRoleList()
-}
-
-// 重置
-const handleReset = () => {
-  searchForm.roleName = ''
-  searchForm.roleCode = ''
-  handleSearch()
-}
-
-// 分页
-const handleSizeChange = (val: number) => {
-  pagination.pageSize = val
-  fetchRoleList()
-}
-
-const handleCurrentChange = (val: number) => {
-  pagination.currentPage = val
-  fetchRoleList()
+  roleForm.id = undefined
+  roleForm.roleName = ''
+  roleForm.roleCode = ''
+  roleForm.description = ''
 }
 
 // 新增
@@ -261,6 +177,11 @@ const handleAdd = () => {
   dialogVisible.value = true
   resetForm()
 }
+
+// 搜索按钮配置
+const searchToolButton = [
+  { label: t('role.addRole'), type: 'primary', icon: 'Plus', click: handleAdd }
+]
 
 // 编辑
 const handleEdit = (row: any) => {
@@ -281,7 +202,7 @@ const handleDelete = (row: any) => {
     try {
       await deleteRole(row.id)
       ElMessage.success(t('common.deleteSuccess'))
-      fetchRoleList()
+      proTable.value?.refresh()
     } catch (error) {
       console.error(error)
     }
@@ -303,7 +224,7 @@ const submitForm = async () => {
           ElMessage.success(t('common.updateSuccess'))
         }
         dialogVisible.value = false
-        fetchRoleList()
+        proTable.value?.refresh()
       } catch (error) {
         console.error(error)
       } finally {
@@ -313,15 +234,14 @@ const submitForm = async () => {
   })
 }
 
-// 重置表单
-const resetForm = () => {
-  if (roleFormRef.value) {
-    roleFormRef.value.resetFields()
+// 获取权限列表
+const fetchPermissionList = async () => {
+  try {
+    const res = await getPermissionList()    
+    permissionData.value = res.data || []
+  } catch (error) {
+    console.error(error)
   }
-  roleForm.id = undefined
-  roleForm.roleName = ''
-  roleForm.roleCode = ''
-  roleForm.description = ''
 }
 
 // 分配权限
@@ -377,29 +297,11 @@ const submitPermission = async () => {
     permissionLoading.value = false
   }
 }
-
-onMounted(() => {
-  fetchRoleList()
-})
 </script>
 
 <style scoped>
-.app-container {
-  padding: 20px;
-}
-.search-card {
-  margin-bottom: 20px;
-}
-.table-card {
-  min-height: 500px;
-}
-.table-toolbar {
-  margin-bottom: 20px;
-}
-.pagination-container {
-  margin-top: 20px;
-  display: flex;
-  justify-content: flex-end;
+.role-manage {
+  height: 100%;
 }
 .permission-tree-container {
   max-height: 400px;

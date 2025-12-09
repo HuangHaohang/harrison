@@ -14,12 +14,25 @@ export const useTagsViewStore = defineStore('tagsView', () => {
     if (visitedViews.value.some((v) => v.path === view.path)) return
     if (view.path === '/login') return // 不添加登录页
 
-    visitedViews.value.push(
-      Object.assign({}, view, {
-        title: view.meta.title || 'no-name',
-        fullPath: view.fullPath
-      })
-    )
+    const newView = Object.assign({}, view, {
+      title: (view.meta.title as string) || 'no-name',
+      fullPath: view.fullPath
+    })
+
+    if (view.meta?.affix) {
+      // 插入到所有 affix 标签的后面，普通标签的前面
+      let index = 0
+      for (let i = 0; i < visitedViews.value.length; i++) {
+        if (visitedViews.value[i]?.meta?.affix) {
+          index = i + 1
+        } else {
+          break
+        }
+      }
+      visitedViews.value.splice(index, 0, newView)
+    } else {
+      visitedViews.value.push(newView)
+    }
   }
 
   const delVisitedView = (view: TagView): Promise<TagView[]> => {

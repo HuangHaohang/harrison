@@ -27,29 +27,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 
     @Override
     public Page<User> getUserList(Page<User> page, User user) {
-        LambdaQueryWrapper<User> wrapper = new LambdaQueryWrapper<>();
-        if (StringUtils.hasText(user.getUsername())) {
-            wrapper.like(User::getUsername, user.getUsername());
-        }
-        if (user.getStatus() != null) {
-            wrapper.eq(User::getStatus, user.getStatus());
-        }
-        if (user.getMobile() != null) {
-            wrapper.like(User::getMobile, user.getMobile());
-        }
-        Page<User> userPage = this.page(page, wrapper);
-        
-        // Populate roles for each user
-        userPage.getRecords().forEach(u -> {
-            List<UserRole> userRoles = userRoleMapper.selectList(
-                new LambdaQueryWrapper<UserRole>().eq(UserRole::getUserId, u.getUserId())
-            );
-            if (!CollectionUtils.isEmpty(userRoles)) {
-                u.setRoleIds(userRoles.stream().map(UserRole::getRoleId).collect(Collectors.toList()));
-            }
-        });
-        
-        return userPage;
+        return baseMapper.selectUserListWithRole(page, user);
     }
 
     @Override
@@ -67,10 +45,6 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         // Don't update password here
         user.setPassword(null); 
         this.updateById(user);
-        
-        // Update roles
-        userRoleMapper.delete(new LambdaQueryWrapper<UserRole>().eq(UserRole::getUserId, user.getUserId()));
-        saveUserRoles(user.getUserId(), user.getRoleIds());
     }
 
     @Override
@@ -94,6 +68,21 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         user.setUserId(userId);
         user.setPassword(passwordEncoder.encode("123456"));
         this.updateById(user);
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void assignUserRole(Long userId, Long roleId) {
+        // Remove existing roles
+        userRoleMapper.delete(new LambdaQueryWrapper<UserRole>().eq(UserRole::getUserId, userId));
+        
+        // Add new role
+        if (roleId != null) {
+            UserRole userRole = new UserRole();
+            userRole.setUserId(userId);
+            userRole.setRoleId(roleId);
+            userRoleMapper.insert(userRole);
+        }
     }
 
     private void saveUserRoles(Long userId, List<Long> roleIds) {

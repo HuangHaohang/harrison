@@ -1,75 +1,32 @@
 <template>
   <div class="user-manage">
-    <!-- 搜索栏 -->
-    <el-card class="search-card" shadow="hover">
-      <el-form :inline="true" :model="searchForm" class="search-form">
-        <el-form-item :label="$t('user.username')">
-          <el-input v-model="searchForm.username" :placeholder="$t('user.usernamePlaceholder')" clearable />
-        </el-form-item>
-        <el-form-item :label="$t('user.mobile')">
-          <el-input v-model="searchForm.mobile" :placeholder="$t('user.mobilePlaceholder')" clearable />
-        </el-form-item>
-        <el-form-item :label="$t('user.status')">
-          <el-select v-model="searchForm.status" :placeholder="$t('user.status')" clearable style="width: 120px">
-            <el-option :label="$t('user.enable')" :value="1" />
-            <el-option :label="$t('user.disable')" :value="0" />
-          </el-select>
-        </el-form-item>
-        <el-form-item>
-          <el-button type="primary" :icon="Search" @click="handleSearch">{{ $t('common.search') }}</el-button>
-          <el-button :icon="Refresh" @click="handleReset">{{ $t('common.reset') }}</el-button>
-        </el-form-item>
-      </el-form>
-    </el-card>
+    <ProTable
+      ref="proTable"
+      :columns="columns"
+      :request-api="getUserList"
+      :search-tool-button="searchToolButton"
+      :page-param-keys="{ pageNum: 'page', pageSize: 'limit' }"
+    >
+      <!-- Avatar Slot -->
+      <template #avatar="{ row }">
+        <el-avatar :size="40" :src="row.avatar">{{ row.username?.charAt(0).toUpperCase() }}</el-avatar>
+      </template>
 
-    <!-- 数据表格 -->
-    <el-card class="table-card" shadow="hover">
-      <div class="toolbar">
-        <el-button type="primary" :icon="Plus" @click="handleAdd">{{ $t('user.addUser') }}</el-button>
-      </div>
+      <!-- Status Slot -->
+      <template #status="{ row }">
+        <el-tag :type="row.status === 1 ? 'success' : 'danger'">
+          {{ row.status === 1 ? $t('user.enable') : $t('user.disable') }}
+        </el-tag>
+      </template>
 
-      <el-table v-loading="loading" :data="tableData" border style="width: 100%">
-        <el-table-column prop="avatar" :label="$t('user.avatar')" width="80" align="center">
-          <template #default="{ row }">
-            <el-avatar :size="40" :src="row.avatar">{{ row.username?.charAt(0).toUpperCase() }}</el-avatar>
-          </template>
-        </el-table-column>
-        <el-table-column prop="username" :label="$t('user.username')" min-width="120" />
-        <el-table-column prop="nickname" :label="$t('user.nickname')" min-width="120" />
-        <el-table-column prop="email" :label="$t('user.email')" min-width="180" show-overflow-tooltip />
-        <el-table-column prop="mobile" :label="$t('user.mobile')" min-width="120" />
-        <el-table-column prop="roleName" :label="$t('user.role')" min-width="120" show-overflow-tooltip />
-        <el-table-column prop="status" :label="$t('user.status')" width="100" align="center">
-          <template #default="{ row }">
-            <el-tag :type="row.status === 1 ? 'success' : 'danger'">
-              {{ row.status === 1 ? $t('user.enable') : $t('user.disable') }}
-            </el-tag>
-          </template>
-        </el-table-column>
-        <el-table-column prop="createTime" :label="$t('user.createTime')" min-width="180" />
-        <el-table-column :label="$t('common.operation')" width="340" align="center" fixed="right">
-          <template #default="{ row }">
-            <el-button link type="primary" :icon="Edit" @click="handleEdit(row)">{{ $t('common.edit') }}</el-button>
-            <el-button link type="primary" :icon="Setting" @click="handleAssignRole(row)">{{ $t('user.assignRole') }}</el-button>
-            <el-button link type="warning" :icon="Key" @click="handleResetPassword(row)">{{ $t('user.resetPassword') }}</el-button>
-            <el-button link type="danger" :icon="Delete" @click="handleDelete(row)">{{ $t('common.delete') }}</el-button>
-          </template>
-        </el-table-column>
-      </el-table>
-
-      <!-- 分页 -->
-      <div class="pagination-container">
-        <el-pagination
-          v-model:current-page="pagination.currentPage"
-          v-model:page-size="pagination.pageSize"
-          :page-sizes="[10, 20, 50, 100]"
-          layout="total, sizes, prev, pager, next, jumper"
-          :total="pagination.total"
-          @size-change="handleSizeChange"
-          @current-change="handleCurrentChange"
-        />
-      </div>
-    </el-card>
+      <!-- Operation Slot -->
+      <template #operation="{ row }">
+        <el-button link type="primary" :icon="Edit" @click="handleEdit(row)">{{ $t('common.edit') }}</el-button>
+        <el-button link type="primary" :icon="Setting" @click="handleAssignRole(row)">{{ $t('user.assignRole') }}</el-button>
+        <el-button link type="warning" :icon="Key" @click="handleResetPassword(row)">{{ $t('user.resetPassword') }}</el-button>
+        <el-button link type="danger" :icon="Delete" @click="handleDelete(row)">{{ $t('common.delete') }}</el-button>
+      </template>
+    </ProTable>
 
     <!-- 新增/编辑弹窗 -->
     <el-dialog
@@ -84,6 +41,18 @@
         :rules="rules"
         label-width="80px"
       >
+        <el-form-item :label="$t('user.avatar')" prop="avatar">
+          <el-upload
+            class="avatar-uploader"
+            action="#"
+            :show-file-list="false"
+            :auto-upload="false"
+            :on-change="handleAvatarChange"
+          >
+            <img v-if="form.avatar" :src="form.avatar" class="avatar" />
+            <el-icon v-else class="avatar-uploader-icon"><Plus /></el-icon>
+          </el-upload>
+        </el-form-item>
         <el-form-item :label="$t('user.username')" prop="username">
           <el-input v-model="form.username" :placeholder="$t('user.usernamePlaceholder')" :disabled="!!form.userId" />
         </el-form-item>
@@ -145,32 +114,50 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, computed, onMounted } from 'vue'
+import { ref, reactive, computed } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
-import { Search, Refresh, Plus, Edit, Delete, Key, Setting } from '@element-plus/icons-vue'
+import { Plus, Edit, Delete, Key, Setting } from '@element-plus/icons-vue'
 import { getUserList, addUser, updateUser, deleteUser, resetPassword, assignUserRole } from '@/api/user'
 import { getRoleList } from '@/api/role'
 import { useI18n } from 'vue-i18n'
+import ProTable from '@/components/ProTable/index.vue'
 
 const { t } = useI18n()
+const proTable = ref()
 
-// 搜索表单
-const searchForm = reactive({
-  username: '',
-  mobile: '',
-  status: undefined
-})
-
-// 分页
-const pagination = reactive({
-  currentPage: 1,
-  pageSize: 10,
-  total: 0
-})
-
-// 表格数据
-const loading = ref(false)
-const tableData = ref([])
+// 表格配置
+const columns = [
+  { type: 'selection', fixed: 'left', width: 55 },
+  { prop: 'avatar', label: t('user.avatar'), width: 80, align: 'center', slot: 'avatar' },
+  { 
+    prop: 'username', 
+    label: t('user.username'), 
+    minWidth: 120, 
+    search: { el: 'input', props: { placeholder: t('user.usernamePlaceholder') } } 
+  },
+  { prop: 'nickname', label: t('user.nickname'), minWidth: 120 },
+  { prop: 'email', label: t('user.email'), minWidth: 180, showOverflowTooltip: true },
+  { 
+    prop: 'mobile', 
+    label: t('user.mobile'), 
+    minWidth: 120, 
+    search: { el: 'input', props: { placeholder: t('user.mobilePlaceholder') } } 
+  },
+  { prop: 'roleName', label: t('user.role'), minWidth: 120, showOverflowTooltip: true },
+  {
+    prop: 'status', label: t('user.status'), width: 100, align: 'center', slot: 'status',
+    search: {
+      el: 'select',
+      props: { placeholder: t('user.status') },
+    },
+    enum: [
+      { label: t('user.enable'), value: 1 },
+      { label: t('user.disable'), value: 0 }
+    ]
+  },
+  { prop: 'createTime', label: t('user.createTime'), minWidth: 180 },
+  { prop: 'operation', label: t('common.operation'), width: 340, align: 'center', fixed: 'right', slot: 'operation' }
+]
 
 // 弹窗控制
 const dialogVisible = ref(false)
@@ -188,6 +175,24 @@ const form = reactive({
   avatar: ''
 })
 
+const handleAvatarChange = (uploadFile: any) => {
+  const reader = new FileReader()
+  reader.readAsDataURL(uploadFile.raw)
+  reader.onload = () => {
+    form.avatar = reader.result as string
+  }
+}
+
+// 新增
+const handleAdd = () => {
+  resetForm()
+  dialogVisible.value = true
+}
+
+const searchToolButton = [
+  { label: t('user.addUser'), type: 'primary', icon: 'Plus', click: handleAdd }
+]
+
 const dialogTitle = computed(() => form.userId ? t('user.editUser') : t('user.addUser'))
 
 // 校验规则
@@ -203,69 +208,14 @@ const roleList = ref([])
 const currentUserId = ref<number | undefined>(undefined)
 const selectedRoleId = ref<number | undefined>(undefined)
 
-// 获取列表
-const getList = async () => {
-  loading.value = true
-  try {
-    const params = {
-      ...searchForm,
-      page: pagination.currentPage,
-      size: pagination.pageSize
-    }
-    const res: any = await getUserList(params)
-    console.log(res)
-    if (res.code === 200) {
-      // 假设后端返回结构 { data: { list: [], total: 100 } }
-      // 如果后端直接返回 { data: [] }，需要调整
-      tableData.value = res.data.records || []
-      pagination.total = res.data.total || 0
-    }
-  } catch (error) {
-    console.error(error)
-  } finally {
-    loading.value = false
-  }
-}
-
 // 获取角色列表
 const fetchRoleList = async () => {
   try {
     const res: any = await getRoleList({ page: 1, limit: 1000 })
-    roleList.value = res.data.list || []
+    roleList.value = res.data.records || []
   } catch (error) {
     console.error(error)
   }
-}
-
-// 搜索
-const handleSearch = () => {
-  pagination.currentPage = 1
-  getList()
-}
-
-// 重置搜索
-const handleReset = () => {
-  searchForm.username = ''
-  searchForm.mobile = ''
-  searchForm.status = undefined
-  handleSearch()
-}
-
-// 分页改变
-const handleSizeChange = (val: number) => {
-  pagination.pageSize = val
-  getList()
-}
-
-const handleCurrentChange = (val: number) => {
-  pagination.currentPage = val
-  getList()
-}
-
-// 新增
-const handleAdd = () => {
-  resetForm()
-  dialogVisible.value = true
 }
 
 // 编辑
@@ -285,10 +235,10 @@ const handleDelete = (row: any) => {
     type: 'warning'
   }).then(async () => {
     try {
-      const res: any = await deleteUser(row.id)
+      const res: any = await deleteUser(row.userId)
       if (res.code === 200) {
         ElMessage.success(t('common.deleteSuccess'))
-        getList()
+        proTable.value?.refresh()
       }
     } catch (error) {
       console.error(error)
@@ -304,7 +254,7 @@ const handleResetPassword = (row: any) => {
     type: 'warning'
   }).then(async () => {
     try {
-      const res: any = await resetPassword(row.id)
+      const res: any = await resetPassword(row.userId)
       if (res.code === 200) {
         ElMessage.success('密码重置成功')
       }
@@ -316,7 +266,7 @@ const handleResetPassword = (row: any) => {
 
 // 分配角色
 const handleAssignRole = (row: any) => {
-  currentUserId.value = row.id
+  currentUserId.value = row.userId
   selectedRoleId.value = row.roleId // 后端返回的当前角色ID
   roleDialogVisible.value = true
   if (roleList.value.length === 0) {
@@ -333,7 +283,7 @@ const submitRoleAssignment = async () => {
     if (res.code === 200) {
       ElMessage.success(t('common.updateSuccess'))
       roleDialogVisible.value = false
-      getList() // 刷新列表以更新角色显示
+      proTable.value?.refresh()
     }
   } catch (error) {
     console.error(error)
@@ -355,7 +305,7 @@ const submitForm = async () => {
         if (res.code === 200) {
           ElMessage.success(form.userId ? t('common.updateSuccess') : t('common.addSuccess'))
           dialogVisible.value = false
-          getList()
+          proTable.value?.refresh()
         }
       } catch (error) {
         console.error(error)
@@ -381,31 +331,38 @@ const resetForm = () => {
     avatar: ''
   })
 }
-
-onMounted(() => {
-  getList()
-})
 </script>
 
 <style scoped>
 .user-manage {
-  padding: 20px;
+  padding: 0;
 }
-.search-card {
-  margin-bottom: 20px;
+.avatar-uploader .avatar {
+  width: 100px;
+  height: 100px;
+  display: block;
 }
-.search-form .el-form-item {
-  margin-bottom: 0; /* 让搜索栏更紧凑 */
+</style>
+
+<style>
+.avatar-uploader .el-upload {
+  border: 1px dashed var(--el-border-color);
+  border-radius: 6px;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  transition: var(--el-transition-duration-fast);
 }
-.table-card {
-  min-height: 500px;
+
+.avatar-uploader .el-upload:hover {
+  border-color: var(--el-color-primary);
 }
-.toolbar {
-  margin-bottom: 20px;
-}
-.pagination-container {
-  margin-top: 20px;
-  display: flex;
-  justify-content: flex-end;
+
+.avatar-uploader-icon {
+  font-size: 28px;
+  color: #8c939d;
+  width: 100px;
+  height: 100px;
+  text-align: center;
 }
 </style>

@@ -11,12 +11,15 @@
                 <router-view></router-view>
             </el-main>
         </el-container>
+        <!-- AI Chat Component -->
+        <AIChat />
     </el-container>
 </template>
 
 <script setup lang="ts">
 import Header from '@/components/Header.vue'
 import Aside from '@/components/Aside.vue'
+import AIChat from '@/components/AIChat.vue'
 import { useAppStore } from '@/stores/app'
 import { storeToRefs } from 'pinia'
 
@@ -37,7 +40,8 @@ const { isCollapse } = storeToRefs(appStore)
 
 .header-container {
     padding: 0;
-    height: auto !important; /* 让 Header 组件决定高度 */
+    height: auto !important;
+    /* 让 Header 组件决定高度 */
 }
 
 .main-container {
