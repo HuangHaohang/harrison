@@ -29,6 +29,8 @@ public class AuthGlobalFilter implements GlobalFilter, Ordered {
     private static final List<String> WHITELIST = Arrays.asList(
             "/api/auth/login",
             "/api/auth/register",
+            "/api/auth/reset-password",
+            "/api/auth/send-code",
             "/api/ai/chat/stream"
     );
 

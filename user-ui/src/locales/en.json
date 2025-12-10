@@ -1,0 +1,83 @@
+{
+  "systemName": "Harrison AI Social Media",
+  "nav": {
+    "home": "Home",
+    "features": "Features",
+    "platforms": "Platforms",
+    "about": "About"
+  },
+  "auth": {
+    "login": "Login",
+    "register": "Sign Up",
+    "welcomeBack": "Welcome back to Harrison AI",
+    "usernamePlaceholder": "Enter Username",
+    "passwordPlaceholder": "Enter Password",
+    "loginSuccess": "Login Successful",
+    "loginFailed": "Login Failed",
+    "forgotPassword": "Forgot Password?",
+    "registerAccount": "Create Account",
+    "resetPasswordTitle": "Reset Password",
+    "mobilePlaceholder": "Enter Mobile Number",
+    "codePlaceholder": "Verification Code",
+    "sendCode": "Send Code",
+    "newPasswordPlaceholder": "New Password",
+    "confirmPasswordPlaceholder": "Confirm Password",
+    "backToLogin": "Back to Login",
+    "submitReset": "Reset Password",
+    "submitRegister": "Sign Up",
+    "nicknamePlaceholder": "Enter Nickname (Optional)",
+    "emailPlaceholder": "Enter Email (Optional)",
+    "codeSent": "Verification code sent!",
+    "resetSuccess": "Password reset successful! Please login.",
+    "registerSuccess": "Registration successful! Please login.",
+    "mobileFormatError": "Invalid mobile number format",
+    "passwordFormatError": "Password must be at least 8 chars with uppercase, lowercase, number and symbol",
+    "passwordMatchError": "Passwords do not match"
+  },
+  "hero": {
+    "title": "AI Social Media Auto-Operation Platform",
+    "subtitle": "From topic discovery to content generation, and multi-platform auto-distribution & interaction.<br />One-stop AI solution making social media operation easier than ever.",
+    "cta": "Get Started",
+    "more": "Learn More"
+  },
+  "features": {
+    "title": "Core Features",
+    "list": {
+      "hotVideos": {
+        "title": "AI Hot Video Discovery",
+        "desc": "Real-time monitoring of big data to accurately capture traffic trends, helping you discover viral topics one step ahead."
+      },
+      "copywriting": {
+        "title": "AI Copywriting",
+        "desc": "Deep learning of viral copywriting logic, generating catchy titles and scripts in one click, saying goodbye to creative block."
+      },
+      "imageGen": {
+        "title": "AI Text-to-Image",
+        "desc": "No professional painting skills required, generate high-quality cover images and illustrations just by entering text."
+      },
+      "videoGen": {
+        "title": "AI Text-to-Video",
+        "desc": "One-click text-to-video conversion, automatically matching materials and effects to mass-produce high-quality short videos."
+      },
+      "autoPublish": {
+        "title": "Auto Publishing",
+        "desc": "Supports multi-account matrix management, scheduled automatic publishing of posts or videos, freeing your hands."
+      },
+      "autoReply": {
+        "title": "Auto Reply Interaction",
+        "desc": "Intelligently identify comment intent, automatically reply to fan interactions, significantly increasing account activity."
+      }
+    }
+  },
+  "platforms": {
+    "tiktok": "TikTok",
+    "rednote": "RedNote",
+    "channel": "WeChat Channel"
+  },
+  "footer": {
+    "copyright": "© 2025 Harrison AI. All rights reserved.",
+    "userAgreement": "User Agreement",
+    "privacyPolicy": "Privacy Policy",
+    "disclaimer": "Disclaimer"
+  }
+}
