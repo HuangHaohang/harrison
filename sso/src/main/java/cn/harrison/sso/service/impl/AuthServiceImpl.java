@@ -11,11 +11,13 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 @Service
@@ -26,6 +28,9 @@ public class AuthServiceImpl implements AuthService {
     private final PermissionMapper permissionMapper;
     private final PasswordEncoder passwordEncoder;
     private final JwtUtils jwtUtils;
+
+    // Mock storage for verification codes: Mobile -> Code
+    private static final Map<String, String> MOCK_CODE_STORE = new ConcurrentHashMap<>();
 
     @Override
     public Result<Map<String, Object>> login(String username, String password) {
@@ -71,6 +76,68 @@ public class AuthServiceImpl implements AuthService {
         data.put("permissions", permissions.stream().map(Permission::getCode).collect(Collectors.toList()));
         
         return Result.success(data);
+    }
+
+    @Override
+    public void register(User user) {
+        if (StringUtils.hasText(user.getUsername())) {
+            long count = userMapper.selectCount(new LambdaQueryWrapper<User>().eq(User::getUsername, user.getUsername()));
+            if (count > 0) {
+                throw new RuntimeException("Username already exists");
+            }
+        }
+        
+        if (StringUtils.hasText(user.getMobile())) {
+             long count = userMapper.selectCount(new LambdaQueryWrapper<User>().eq(User::getMobile, user.getMobile()));
+             if (count > 0) {
+                 throw new RuntimeException("Mobile number already registered");
+             }
+        }
+
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
+        user.setStatus(1); // Enabled by default
+        userMapper.insert(user);
+    }
+
+    @Override
+    public void sendResetCode(String mobile) {
+        if (!StringUtils.hasText(mobile)) {
+            throw new RuntimeException("Mobile number cannot be empty");
+        }
+        
+        long count = userMapper.selectCount(new LambdaQueryWrapper<User>().eq(User::getMobile, mobile));
+        if (count == 0) {
+            throw new RuntimeException("Mobile number not found");
+        }
+
+        // Generate 6 digit code
+        String code = String.valueOf((int)((Math.random() * 9 + 1) * 100000));
+        MOCK_CODE_STORE.put(mobile, code);
+        
+        // Mock sending: Print to console
+        System.out.println("==========================================");
+        System.out.println("Mock SMS Sending to: " + mobile);
+        System.out.println("Verification Code: " + code);
+        System.out.println("==========================================");
+    }
+
+    @Override
+    public void resetPasswordByMobile(String mobile, String code, String newPassword) {
+        String storedCode = MOCK_CODE_STORE.get(mobile);
+        if (storedCode == null || !storedCode.equals(code)) {
+            throw new RuntimeException("Invalid verification code");
+        }
+        
+        User user = userMapper.selectOne(new LambdaQueryWrapper<User>().eq(User::getMobile, mobile));
+        if (user == null) {
+            throw new RuntimeException("User not found");
+        }
+        
+        user.setPassword(passwordEncoder.encode(newPassword));
+        userMapper.updateById(user);
+        
+        // Clear code
+        MOCK_CODE_STORE.remove(mobile);
     }
 
     private List<Permission> buildMenuTree(List<Permission> permissions) {

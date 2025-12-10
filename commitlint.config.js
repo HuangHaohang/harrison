@@ -3,6 +3,7 @@
 // 定义你的项目模块，对应提交时的 scope
 const packages = [
   'ui',
+  'user-ui',
   'ai',
   'gateway',
   'sso'

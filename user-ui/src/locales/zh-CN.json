@@ -1,0 +1,83 @@
+{
+  "systemName": "Harrison AI 自媒体",
+  "nav": {
+    "home": "首页",
+    "features": "功能",
+    "platforms": "平台",
+    "about": "关于"
+  },
+  "auth": {
+    "login": "登录",
+    "register": "注册",
+    "welcomeBack": "欢迎回来",
+    "usernamePlaceholder": "请输入用户名",
+    "passwordPlaceholder": "请输入密码",
+    "loginSuccess": "登录成功",
+    "loginFailed": "登录失败",
+    "forgotPassword": "忘记密码？",
+    "registerAccount": "注册账号",
+    "resetPasswordTitle": "重置密码",
+    "mobilePlaceholder": "请输入手机号",
+    "codePlaceholder": "验证码",
+    "sendCode": "发送验证码",
+    "newPasswordPlaceholder": "新密码",
+    "confirmPasswordPlaceholder": "确认密码",
+    "backToLogin": "返回登录",
+    "submitReset": "重置密码",
+    "submitRegister": "立即注册",
+    "nicknamePlaceholder": "请输入昵称（选填）",
+    "emailPlaceholder": "请输入邮箱（选填）",
+    "codeSent": "验证码已发送！",
+    "resetSuccess": "密码重置成功！请登录。",
+    "registerSuccess": "注册成功！请登录。",
+    "mobileFormatError": "请输入有效的手机号码",
+    "passwordFormatError": "密码必须至少8位，包含大写字母、小写字母、数字和符号",
+    "passwordMatchError": "两次输入的密码不一致"
+  },
+  "hero": {
+    "title": "AI 自媒体全自动运营平台",
+    "subtitle": "从选题挖掘到内容生成，再到多平台自动分发与互动，<br />一站式 AI 解决方案，让自媒体运营从未如此简单。",
+    "cta": "立即开始",
+    "more": "了解更多"
+  },
+  "features": {
+    "title": "核心功能",
+    "list": {
+      "hotVideos": {
+        "title": "AI 发掘热门视频",
+        "desc": "全网大数据实时监控，精准捕捉流量风口，助你快人一步发现爆款选题。"
+      },
+      "copywriting": {
+        "title": "AI 文案生成",
+        "desc": "深度学习爆款文案逻辑，一键生成吸睛标题与脚本，告别灵感枯竭。"
+      },
+      "imageGen": {
+        "title": "AI 文生图",
+        "desc": "无需专业绘画技能，输入文字即可生成高质量封面图与配图。"
+      },
+      "videoGen": {
+        "title": "AI 文生视频",
+        "desc": "文字一键转视频，自动匹配素材与特效，极速量产高质量短视频。"
+      },
+      "autoPublish": {
+        "title": "自动化发布",
+        "desc": "支持多账号矩阵管理，定时自动发布图文或视频，解放你的双手。"
+      },
+      "autoReply": {
+        "title": "自动回复互动",
+        "desc": "智能识别评论意图，自动回复粉丝互动，大幅提升账号活跃度。"
+      }
+    }
+  },
+  "platforms": {
+    "tiktok": "抖音",
+    "rednote": "小红书",
+    "channel": "视频号"
+  },
+  "footer": {
+    "copyright": "© 2025 Harrison AI. All rights reserved.",
+    "userAgreement": "用户协议",
+    "privacyPolicy": "隐私政策",
+    "disclaimer": "免责声明"
+  }
+}
