@@ -92,8 +92,8 @@ import { ElMessage, ElMessageBox, ElTree } from 'element-plus'
 import { Plus, Edit, Delete, Setting } from '@element-plus/icons-vue'
 import { getRoleList, addRole, updateRole, deleteRole, getRolePermissions, assignPermissions } from '@/api/role'
 import { getPermissionList } from '@/api/permission'
-import ProTable from '@/components/ProTable/index.vue'
-import type { ColumnProps } from '@/components/ProTable/interface'
+import ProTable from '@/components/Common/ProTable/index.vue'
+import type { ColumnProps } from '@/components/Common/ProTable/interface'
 
 const { t, locale } = useI18n()
 

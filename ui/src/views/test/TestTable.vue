@@ -33,7 +33,7 @@
 <script setup lang="ts">
 import { reactive } from 'vue'
 import { Plus, Delete, Download, Edit } from '@element-plus/icons-vue'
-import ProTable from '@/components/ProTable/index.vue'
+import ProTable from '@/components/Common/ProTable/index.vue'
 import { useI18n } from 'vue-i18n'
 
 const { t } = useI18n()

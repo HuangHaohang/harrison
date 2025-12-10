@@ -7,7 +7,6 @@ import { type RouteRecordRaw } from 'vue-router'
 // 导入所有视图组件
 // 扩大范围，包含 views 和 components 目录下的组件
 const modules = import.meta.glob(['/src/views/**/*.vue', '/src/components/**/*.vue'])
-const Layout = () => import('@/layout/HomeView.vue')
 
 export const useAuthStore = defineStore('auth', () => {
   const token = ref<string | null>(localStorage.getItem('token'))
@@ -43,14 +42,21 @@ export const useAuthStore = defineStore('auth', () => {
       console.log('res', res);
             
       if (res.code === 200) {
-        // 后端现在返回的是扁平结构 { username: "...", avatar: "...", menus: [], permissions: [] }
-        // 并不是嵌套在 user 对象里
         user.value = {
           username: res.data.username,
           avatar: res.data.avatar
         }
         permissions.value = res.data.permissions || []
-        menus.value = res.data.menus || []
+        const homeMenu = {
+          path: '/home',
+          simplifiedName: '首页',
+          traditionalName: '首頁',
+          englishName: 'Home',
+          code: 'Home',
+          component: '@/views/common/Home.vue',
+          icon: 'Odometer'
+        }
+        menus.value = [homeMenu, ...(res.data.menus || [])]
         
         // 动态添加路由
         const routes = generateRoutes(menus.value)
@@ -64,15 +70,16 @@ export const useAuthStore = defineStore('auth', () => {
          router.addRoute({
            path: '/:pathMatch(.*)*',
            name: 'NotFound',
-           component: () => import('@/views/404.vue'),
+           component: () => import('@/views/common/404.vue'),
            meta: { requiresAuth: false }
          })
 
          // 添加一个重定向，如果访问 / 但没有子路由匹配，默认跳转到第一个动态路由
-        if (routes.length > 0) {
+        if (routes.length > 0 && routes[0]) {
+           const firstRoute = routes[0]
            router.addRoute({
              path: '/:pathMatch(.*)*',
-             redirect: routes[0].path
+             redirect: firstRoute.path
            })
         }
         
@@ -125,14 +132,14 @@ export const useAuthStore = defineStore('auth', () => {
         // 动态匹配组件路径
         // 后端返回格式如: "@/views/system/user/index.vue"
         // 将 @ 替换为 /src 以匹配 import.meta.glob 的 key
-        const componentPath = menu.component.replace(/^@/, '/src')
+        let componentPath = menu.component.replace(/^@/, '/src')
         
         if (modules[componentPath]) {
           route.component = modules[componentPath]
         } else {
           console.warn(`Component not found: ${componentPath}, raw: ${menu.component}`)
           // 如果找不到组件，可以给一个默认的 404 或者空组件，防止路由崩溃
-          route.component = () => import('@/views/404.vue')
+          route.component = () => import('@/views/common/404.vue')
         }
         
         routes.push(route)

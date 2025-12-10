@@ -11,7 +11,7 @@ export {}
 /* prettier-ignore */
 declare module 'vue' {
   export interface GlobalComponents {
-    AIChat: typeof import('./src/components/AIChat.vue')['default']
+    AIChat: typeof import('./src/components/Business/AIChat.vue')['default']
     Aside: typeof import('./src/components/Aside.vue')['default']
     ElAside: typeof import('element-plus/es')['ElAside']
     ElAvatar: typeof import('element-plus/es')['ElAvatar']
@@ -55,10 +55,10 @@ declare module 'vue' {
     Header: typeof import('./src/components/Header.vue')['default']
     HelloWorld: typeof import('./src/components/HelloWorld.vue')['default']
     MenuItem: typeof import('./src/components/MenuItem.vue')['default']
-    ProTable: typeof import('./src/components/ProTable/index.vue')['default']
+    ProTable: typeof import('./src/components/Common/ProTable/index.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
-    SearchForm: typeof import('./src/components/ProTable/SearchForm.vue')['default']
+    SearchForm: typeof import('./src/components/Common/ProTable/SearchForm.vue')['default']
     Test: typeof import('./src/components/views/Test.vue')['default']
   }
   export interface GlobalDirectives {

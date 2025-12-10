@@ -301,7 +301,7 @@ const sendMessage = () => {
     es.value = new EventSource(url)
     
     es.value.onmessage = (e) => {
-      if (e.data) {
+      if (e.data && messages.value[aiIndex]) {
         try {
           const data = JSON.parse(e.data)
           if (data.content !== undefined) {
@@ -319,9 +319,11 @@ const sendMessage = () => {
     
     es.value.onerror = () => {
       loading.value = false
-      messages.value[aiIndex].isStreaming = false
-      if (!messages.value[aiIndex].content) {
-        messages.value[aiIndex].content = '服务异常或网络错误'
+      if (messages.value[aiIndex]) {
+        messages.value[aiIndex].isStreaming = false
+        if (!messages.value[aiIndex].content) {
+          messages.value[aiIndex].content = '服务异常或网络错误'
+        }
       }
       es.value?.close()
       es.value = null
@@ -333,8 +335,10 @@ const sendMessage = () => {
   } catch (error) {
     console.error(error)
     loading.value = false
-    messages.value[aiIndex].isStreaming = false
-    messages.value[aiIndex].content = '服务异常或网络错误'
+    if (messages.value[aiIndex]) {
+      messages.value[aiIndex].isStreaming = false
+      messages.value[aiIndex].content = '服务异常或网络错误'
+    }
     scrollToBottom()
   }
 }
