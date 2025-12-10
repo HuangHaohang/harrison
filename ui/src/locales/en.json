@@ -29,7 +29,32 @@
     "passwordPlaceholder": "Enter password"
   },
   "home": {
-    "title": "Home"
+    "title": "Home",
+    "heroTitle": "Harrison AI System",
+    "heroSubtitle": "Next Generation Microservices & AI Integration Platform",
+    "startChat": "Start Conversation",
+    "docs": "Documentation",
+    "aiCore": "AI Core",
+    "rbac": "RBAC",
+    "gateway": "Gateway",
+    "features": {
+      "ai": {
+        "title": "AI Integration",
+        "desc": "Seamlessly integrated with state-of-the-art LLMs including Qwen, DeepSeek, and more."
+      },
+      "rbac": {
+        "title": "Role-Based Access",
+        "desc": "Granular permission control system ensuring enterprise-grade security and compliance."
+      },
+      "microservices": {
+        "title": "Microservices",
+        "desc": "Scalable architecture powered by Spring Cloud Alibaba and Nacos."
+      },
+      "ui": {
+        "title": "Modern UI",
+        "desc": "Built with Vue 3, TypeScript, and Element Plus for an exceptional user experience."
+      }
+    }
   },
   "common": {
     "add": "Add",

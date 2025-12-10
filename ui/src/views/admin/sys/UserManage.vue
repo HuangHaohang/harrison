@@ -120,7 +120,7 @@ import { Plus, Edit, Delete, Key, Setting } from '@element-plus/icons-vue'
 import { getUserList, addUser, updateUser, deleteUser, resetPassword, assignUserRole } from '@/api/user'
 import { getRoleList } from '@/api/role'
 import { useI18n } from 'vue-i18n'
-import ProTable from '@/components/ProTable/index.vue'
+import ProTable from '@/components/Common/ProTable/index.vue'
 
 const { t } = useI18n()
 const proTable = ref()
@@ -204,7 +204,7 @@ const rules = computed(() => ({
 // 角色分配状态
 const roleDialogVisible = ref(false)
 const roleLoading = ref(false)
-const roleList = ref([])
+const roleList = ref<any[]>([])
 const currentUserId = ref<number | undefined>(undefined)
 const selectedRoleId = ref<number | undefined>(undefined)
 

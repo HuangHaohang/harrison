@@ -114,8 +114,8 @@ import { useI18n } from 'vue-i18n'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { Plus, Edit, Delete, Refresh } from '@element-plus/icons-vue'
 import { getPermissionList, addPermission, updatePermission, deletePermission } from '@/api/permission'
-import ProTable from '@/components/ProTable/index.vue'
-import type { ColumnProps } from '@/components/ProTable/interface'
+import ProTable from '@/components/Common/ProTable/index.vue'
+import type { ColumnProps } from '@/components/Common/ProTable/interface'
 
 const { t, locale } = useI18n()
 const proTable = ref()
@@ -150,7 +150,17 @@ const dialogVisible = ref(false)
 const submitLoading = ref(false)
 const formRef = ref()
 
-const form = reactive({
+const form = reactive<{
+  id: number | undefined;
+  parentId: number | null;
+  type: number;
+  simplifiedName: string;
+  code: string;
+  path: string;
+  component: string;
+  icon: string;
+  sort: number;
+}>({
   id: undefined,
   parentId: null,
   type: 0,

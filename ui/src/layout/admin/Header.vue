@@ -192,8 +192,8 @@ const toLastView = (visitedViews: any[], view: any) => {
 // 初始化首页标签
 const initTags = () => {
   const homeTag = {
-    path: '/dashboard',
-    name: 'Dashboard',
+    path: '/home',
+    name: 'Home',
     meta: { title: t('home.title'), affix: true }
   }
   tagsViewStore.addVisitedView(homeTag as any)
@@ -253,10 +253,10 @@ watch(
     }
     // 递归查找菜单路径
     const menuPath = findMenuPath(menus, newPath)
-    if (newPath === '/dashboard') {
-      breadcrumbs.value = [{ path: '/dashboard', meta: { title: t('home.title') }, name: 'Dashboard' }]
+    if (newPath === '/home') {
+      breadcrumbs.value = [{ path: '/home', meta: { title: t('home.title') }, name: t('home.title') }]
     } else {
-      breadcrumbs.value = [{ path: '/dashboard', meta: { title: t('home.title') }, name: 'Dashboard' }, ...menuPath]
+      breadcrumbs.value = [{ path: '/home', meta: { title: t('home.title') }, name: t('home.title') }, ...menuPath]
     }
   },
   { immediate: true }

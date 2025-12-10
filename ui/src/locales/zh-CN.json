@@ -29,7 +29,32 @@
     "passwordPlaceholder": "请输入密码"
   },
   "home": {
-    "title": "首页"
+    "title": "首页",
+    "heroTitle": "Harrison AI 系统",
+    "heroSubtitle": "新一代微服务与 AI 融合平台",
+    "startChat": "开始对话",
+    "docs": "查阅文档",
+    "aiCore": "AI 核心",
+    "rbac": "权限控制",
+    "gateway": "网关服务",
+    "features": {
+      "ai": {
+        "title": "AI 深度集成",
+        "desc": "无缝集成通义千问、DeepSeek 等前沿大语言模型。"
+      },
+      "rbac": {
+        "title": "RBAC 权限管理",
+        "desc": "细粒度的权限控制系统，确保企业级安全与合规。"
+      },
+      "microservices": {
+        "title": "微服务架构",
+        "desc": "基于 Spring Cloud Alibaba 和 Nacos 的可扩展架构。"
+      },
+      "ui": {
+        "title": "现代化 UI",
+        "desc": "基于 Vue 3、TypeScript 和 Element Plus 打造的卓越用户体验。"
+      }
+    }
   },
   "common": {
     "add": "新增",

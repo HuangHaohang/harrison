@@ -17,9 +17,9 @@
 </template>
 
 <script setup lang="ts">
-import Header from '@/components/Header.vue'
-import Aside from '@/components/Aside.vue'
-import AIChat from '@/components/AIChat.vue'
+import Header from './Header.vue'
+import Aside from './Aside.vue'
+import AIChat from '@/components/Business/AIChat.vue'
 import { useAppStore } from '@/stores/app'
 import { storeToRefs } from 'pinia'
 

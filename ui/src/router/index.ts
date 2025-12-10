@@ -7,7 +7,7 @@ const router = createRouter({
     {
       path: "/login",
       name: "Login",
-      component: () => import("@/views/Login.vue"),
+      component: () => import("@/views/common/Login.vue"),
       meta: { requiresAuth: false }
     },
     // HomeView 改为静态路由还是动态路由？
@@ -16,14 +16,14 @@ const router = createRouter({
     {
       path: "/",
       name: "HomeView",
-      component: () => import("@/layout/HomeView.vue"),
+      component: () => import("@/layout/admin/index.vue"),
       meta: { requiresAuth: true },
-      redirect: '/dashboard', // 默认跳转到 dashboard
+      redirect: '/home', // 默认跳转到 dashboard
       children: [
         {
-          path: 'dashboard',
-          name: 'Dashboard',
-          component: () => import('@/views/Dashboard.vue'),
+          path: 'home',
+          name: 'Home',
+          component: () => import('@/views/common/Home.vue'),
           meta: { title: '首页', icon: 'House', affix: true } // affix: true 用于固定在 TagsView
         }
       ]
