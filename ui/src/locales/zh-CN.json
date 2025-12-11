@@ -113,6 +113,7 @@
     "type": "类型",
     "menu": "菜单",
     "button": "按钮",
+    "catalog": "目录",
     "other": "其他",
     "path": "路由路径",
     "component": "组件路径",
@@ -125,6 +126,8 @@
     "simplifiedName": "简体名称",
     "traditionalName": "繁体名称",
     "englishName": "英文名称",
+    "namePlaceholder": "请输入权限名称",
+    "typePlaceholder": "请选择类型",
     "simplifiedPlaceholder": "请输入简体中文名称",
     "traditionalPlaceholder": "请输入繁体中文名称",
     "englishPlaceholder": "请输入英文名称",
@@ -133,7 +136,8 @@
     "componentPlaceholder": "如: @/views/sys/UserManage.vue",
     "componentTip": "注：后端存储格式推荐为 @/views/xxx.vue 或 sys/xxx。当前配置会自动拼接前缀。",
     "iconPlaceholder": "请输入Element Plus图标名称",
-    "deleteConfirm": "确认删除该权限吗？如果包含子权限也会被删除。"
+    "deleteConfirm": "确认删除该权限吗？如果包含子权限也会被删除。",
+    "topMenu": "顶级菜单"
   },
   "error": {
     "notFound": "页面未找到",

@@ -42,13 +42,16 @@ service.interceptors.request.use(
 // 响应拦截器
 service.interceptors.response.use(
   (response: AxiosResponse) => {
-    const { code, msg } = response.data
+    const { code, msg, message } = response.data
+    // 优先使用 msg 或 message，如果没有则使用 code 判断
+    const errorMessage = msg || message
+    
     // 假设后端返回结构为 { code: 200, data: ..., msg: ... }
     // 如果没有 code 字段，可能直接返回了数据，视具体后端规范而定
     // 这里简单判断，如果 code 存在且不是 200，视为错误
     if (code && code !== 200) {
       showMessage({
-        message: msg || i18n.global.t('http.systemError'),
+        message: errorMessage || i18n.global.t('http.systemError'),
         type: 'error',
         grouping: true
       })
@@ -59,13 +62,15 @@ service.interceptors.response.use(
         authStore.logout()
         router.push('/login')
       }
-      return Promise.reject(new Error(msg || 'Error'))
+      return Promise.reject(new Error(errorMessage || 'Error'))
     }
     return response.data
   },
   (error: any) => {
     console.error('err' + error)
-    let message = error.message || i18n.global.t('http.requestFailed')
+    // 尝试获取后端返回的具体错误信息
+    let message = error.response?.data?.msg || error.response?.data?.message || error.message || i18n.global.t('http.requestFailed')
+    
     if (error.response?.status === 401) {
       message = i18n.global.t('http.loginExpired')
       const authStore = useAuthStore()
@@ -76,7 +81,7 @@ service.interceptors.response.use(
     } else if (error.response?.status === 404) {
       message = i18n.global.t('http.notFound')
     } else if (error.response?.status === 500) {
-      message = i18n.global.t('http.serverError')
+      message = error.response?.data?.msg || error.response?.data?.message || i18n.global.t('http.serverError')
     }
     showMessage({
       message: message,

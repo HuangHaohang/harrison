@@ -1,15 +1,15 @@
 <template>
   <div class="permission-manage">
-    <ProTable
-      ref="proTable"
-      :columns="columns"
-      :request-api="getPermissionList"
-      :pagination="false"
-      :search-tool-button="searchToolButton"
-      row-key="id"
-      default-expand-all
-      :tree-props="{ children: 'children', hasChildren: 'hasChildren' }"
-    >
+    <ProTable ref="proTable" :columns="columns" :request-api="getPermissionList" :pagination="false"
+      row-key="id" default-expand-all
+      :tree-props="{ children: 'children', hasChildren: 'hasChildren' }">
+      <!-- Tool Button Slot -->
+      <template #toolButton>
+        <el-button type="primary" :icon="Plus" @click="handleAdd()">
+          {{ $t('permission.addPermission') }}
+        </el-button>
+      </template>
+
       <!-- Name Slot -->
       <template #simplifiedName="{ row }">
         <span>{{ getPermissionName(row) }}</span>
@@ -44,26 +44,13 @@
     </ProTable>
 
     <!-- 新增/编辑对话框 -->
-    <el-dialog
-      v-model="dialogVisible"
-      :title="dialogTitle"
-      width="600px"
-      @close="resetForm"
-    >
+    <el-dialog v-model="dialogVisible" :title="dialogTitle" width="600px" @close="resetForm">
       <el-form ref="formRef" :model="form" :rules="rules" label-width="100px">
-        <el-form-item :label="$t('permission.parent')" prop="parentId">
-          <el-tree-select
-            v-model="form.parentId"
-            :data="permissionTree"
-            :props="defaultProps"
-            check-strictly
-            node-key="id"
-            :render-after-expand="false"
-            style="width: 100%"
-            clearable
-          />
+        <el-form-item :label="$t('permission.parentId')" prop="parentId">
+          <el-tree-select v-model="form.parentId" :data="permissionTree" :props="defaultProps" check-strictly
+            node-key="id" :render-after-expand="false" style="width: 100%" clearable filterable />
         </el-form-item>
-        
+
         <el-form-item :label="$t('permission.type')" prop="type">
           <el-radio-group v-model="form.type">
             <el-radio :value="0">{{ $t('permission.catalog') }}</el-radio>
@@ -75,7 +62,7 @@
         <el-form-item :label="$t('permission.name')" prop="simplifiedName">
           <el-input v-model="form.simplifiedName" :placeholder="$t('permission.namePlaceholder')" />
         </el-form-item>
-        
+
         <el-form-item :label="$t('permission.code')" prop="code" v-if="form.type === 2">
           <el-input v-model="form.code" :placeholder="$t('permission.codePlaceholder')" />
         </el-form-item>
@@ -162,7 +149,7 @@ const form = reactive<{
   sort: number;
 }>({
   id: undefined,
-  parentId: null,
+  parentId: 0,
   type: 0,
   simplifiedName: '',
   code: '',
@@ -189,23 +176,29 @@ const defaultProps = {
 const fetchPermissionTree = async () => {
   try {
     const res = await getPermissionList()
-    permissionTree.value = res.data || []
+    // Add top level option
+    const topNode = {
+      id: 0,
+      simplifiedName: t('permission.topMenu'),
+      traditionalName: t('permission.topMenu'),
+      englishName: t('permission.topMenu'),
+      children: []
+    }
+    permissionTree.value = [topNode, ...(res.data || [])]
   } catch (error) {
     console.error(error)
   }
 }
 
 // 新增
-const handleAdd = (parentId: number | null = null) => {
+const handleAdd = (parentId: number | null = 0) => {
   resetForm()
   form.parentId = parentId
   dialogVisible.value = true
   fetchPermissionTree()
 }
 
-const searchToolButton = [
-  { label: t('permission.addPermission'), type: 'primary', icon: 'Plus', click: () => handleAdd() }
-]
+// searchToolButton was removed as we use toolButton slot now
 
 // 编辑
 const handleEdit = (row: any) => {
@@ -235,7 +228,7 @@ const handleDelete = (row: any) => {
 // 提交
 const submitForm = async () => {
   if (!formRef.value) return
-  
+
   await formRef.value.validate(async (valid: boolean) => {
     if (valid) {
       submitLoading.value = true
@@ -264,7 +257,7 @@ const resetForm = () => {
   }
   Object.assign(form, {
     id: undefined,
-    parentId: null,
+    parentId: 0,
     type: 0,
     simplifiedName: '',
     code: '',

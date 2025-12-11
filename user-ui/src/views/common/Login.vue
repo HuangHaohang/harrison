@@ -243,8 +243,8 @@ import { useRoute } from 'vue-router'
 const { t, locale } = useI18n()
 const router = useRouter()
 const route = useRoute()
-const authStore = useAuthStore()
 const { proxy } = getCurrentInstance()! as any
+const authStore = useAuthStore()
 
 const formRef = ref()
 const registerFormRef = ref()
@@ -441,10 +441,10 @@ const onSubmit = async () => {
       loading.value = false
       if (success) {
         proxy.$message.success(t('auth.loginSuccess'))
-        router.push('/')
-      } else {
-        proxy.$message.error(t('auth.loginFailed'))
+        // 登录成功后跳转到首页
+        router.push('/index')
       }
+      // 失败时不需要额外提示，因为 http 拦截器已经处理了具体的错误消息
     }
   })
 }
