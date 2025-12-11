@@ -113,6 +113,7 @@
     "type": "Type",
     "menu": "Menu",
     "button": "Button",
+    "catalog": "Directory",
     "other": "Other",
     "path": "Route Path",
     "component": "Component Path",
@@ -125,6 +126,8 @@
     "simplifiedName": "Simplified Name",
     "traditionalName": "Traditional Name",
     "englishName": "English Name",
+    "namePlaceholder": "Enter Permission Name",
+    "typePlaceholder": "Select Type",
     "simplifiedPlaceholder": "Enter Simplified Chinese Name",
     "traditionalPlaceholder": "Enter Traditional Chinese Name",
     "englishPlaceholder": "Enter English Name",
@@ -133,7 +136,8 @@
     "componentPlaceholder": "e.g. @/views/sys/UserManage.vue",
     "componentTip": "Note: Recommended format is @/views/xxx.vue or sys/xxx. The prefix will be auto-appended.",
     "iconPlaceholder": "Enter Element Plus Icon Name",
-    "deleteConfirm": "Are you sure to delete this permission? Child permissions will also be deleted."
+    "deleteConfirm": "Are you sure to delete this permission? Child permissions will also be deleted.",
+    "topMenu": "Top Menu"
   },
   "error": {
     "notFound": "Page Not Found",

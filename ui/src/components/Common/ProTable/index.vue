@@ -9,7 +9,7 @@
     <!-- 工具栏区域 -->
     <div class="toolbar-region">
       <div class="toolbar-left">
-        <slot name="toolbar"></slot>
+        <slot name="toolButton"></slot>
       </div>
       <div class="toolbar-right">
         <el-tooltip :content="$t('common.refresh')" placement="top">

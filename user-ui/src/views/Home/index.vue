@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { 
-  Monitor, 
   Edit, 
   Picture, 
   VideoPlay, 
@@ -12,8 +11,12 @@ import {
 } from '@element-plus/icons-vue'
 import { useI18n } from 'vue-i18n'
 import { computed } from 'vue'
+import { useAuthStore } from '@/stores/auth'
+import { useRouter } from 'vue-router'
 
 const { locale, t } = useI18n()
+const authStore = useAuthStore()
+const router = useRouter()
 const currentLang = computed(() => locale.value)
 
 const handleLangChange = (lang: string) => {
@@ -23,6 +26,14 @@ const handleLangChange = (lang: string) => {
 
 const openGitHubRepo = () => {
   window.open('https://github.com/HuangHaohang/harrison', '_blank')
+}
+
+const handleStart = () => {
+  if (authStore.token) {
+    router.push('/index')
+  } else {
+    router.push('/login')
+  }
 }
 
 const features = computed(() => [
@@ -152,8 +163,18 @@ const platforms = computed(() => [
             </div>
 
             <div class="auth-buttons">
-              <el-button text class="login-btn" @click="$router.push('/login')">{{ $t('auth.login') }}</el-button>
-              <el-button type="primary" round @click="$router.push('/login?mode=register')">{{ $t('auth.register') }}</el-button>
+              <template v-if="authStore.token">
+                <div class="user-profile-home" @click="router.push('/index')">
+                  <el-avatar :size="32" :src="authStore.user?.avatar" class="user-avatar">
+                    {{ authStore.user?.username?.charAt(0).toUpperCase() }}
+                  </el-avatar>
+                  <span class="username">{{ authStore.user?.username }}</span>
+                </div>
+              </template>
+              <template v-else>
+                <el-button text class="login-btn" @click="$router.push('/login')">{{ $t('auth.login') }}</el-button>
+                <el-button type="primary" round @click="$router.push('/login?mode=register')">{{ $t('auth.register') }}</el-button>
+              </template>
             </div>
           </div>
         </div>
@@ -168,7 +189,7 @@ const platforms = computed(() => [
               <h1 class="hero-title">{{ $t('hero.title') }}</h1>
               <p class="hero-subtitle" v-html="$t('hero.subtitle')"></p>
               <div class="hero-actions">
-                <el-button type="primary" size="large" class="cta-button">{{ $t('hero.cta') }}</el-button>
+                <el-button type="primary" size="large" class="cta-button" @click="handleStart">{{ $t('hero.cta') }}</el-button>
                 <el-button size="large" class="secondary-button">{{ $t('hero.more') }}</el-button>
               </div>
             </div>
@@ -298,8 +319,28 @@ const platforms = computed(() => [
   height: 72px;
   background: rgba(10, 10, 12, 0.6);
   backdrop-filter: blur(20px) saturate(180%);
-  z-index: 1000;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  z-index: 100;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.user-profile-home {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  padding: 4px 12px;
+  border-radius: 20px;
+  transition: background-color 0.3s;
+}
+
+.user-profile-home:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.user-profile-home .username {
+  font-size: 14px;
+  font-weight: 500;
+  color: #fff;
 }
 
 .header-content {

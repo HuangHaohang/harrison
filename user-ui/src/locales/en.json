@@ -1,5 +1,10 @@
 {
   "systemName": "Harrison AI Social Media",
+  "header": {
+    "profile": "Profile",
+    "logout": "Logout",
+    "help": "Help"
+  },
   "nav": {
     "home": "Home",
     "features": "Features",
@@ -13,6 +18,9 @@
     "usernamePlaceholder": "Enter Username",
     "passwordPlaceholder": "Enter Password",
     "loginSuccess": "Login Successful",
+    "logout": "Logout",
+    "help": "Help",
+    "profile": "Profile",
     "loginFailed": "Login Failed",
     "forgotPassword": "Forgot Password?",
     "registerAccount": "Create Account",
@@ -79,5 +87,13 @@
     "userAgreement": "User Agreement",
     "privacyPolicy": "Privacy Policy",
     "disclaimer": "Disclaimer"
+  },
+  "http": {
+    "systemError": "Unknown System Error",
+    "serverError": "Internal Server Error",
+    "requestFailed": "Request Failed",
+    "loginExpired": "Session expired, please login again",
+    "noPermission": "You do not have permission to access this resource",
+    "notFound": "Resource not found"
   }
 }

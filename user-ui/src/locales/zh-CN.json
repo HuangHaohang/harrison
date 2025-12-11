@@ -1,5 +1,10 @@
 {
   "systemName": "Harrison AI 自媒体",
+  "header": {
+    "profile": "个人中心",
+    "logout": "退出登录",
+    "help": "帮助文档"
+  },
   "nav": {
     "home": "首页",
     "features": "功能",
@@ -13,6 +18,9 @@
     "usernamePlaceholder": "请输入用户名",
     "passwordPlaceholder": "请输入密码",
     "loginSuccess": "登录成功",
+    "logout": "退出登录",
+    "help": "帮助文档",
+    "profile": "个人中心",
     "loginFailed": "登录失败",
     "forgotPassword": "忘记密码？",
     "registerAccount": "注册账号",
@@ -79,5 +87,13 @@
     "userAgreement": "用户协议",
     "privacyPolicy": "隐私政策",
     "disclaimer": "免责声明"
+  },
+  "http": {
+    "systemError": "系统未知错误",
+    "serverError": "服务器内部错误",
+    "requestFailed": "请求失败",
+    "loginExpired": "登录已过期，请重新登录",
+    "noPermission": "您没有权限访问此资源",
+    "notFound": "请求的资源不存在"
   }
 }
